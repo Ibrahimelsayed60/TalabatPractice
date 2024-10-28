@@ -42,11 +42,16 @@ namespace Talabat.API
             try
             {
 
-                var DbContext = Services.GetRequiredService<StoreContext>();
+                var dbContext = Services.GetRequiredService<StoreContext>();
 
-                await DbContext.Database.MigrateAsync();
+                await dbContext.Database.MigrateAsync();
 
                 //Scope.Dispose();
+
+                #region Data-Seeding
+                await StoreContextSeed.SeedAsync(dbContext);
+                #endregion
+
             }
             catch (Exception ex)
             {
@@ -54,6 +59,8 @@ namespace Talabat.API
                 Logger.LogError(ex, "An Error Occured During Applying The Migration");
             }
             #endregion
+
+            
 
             #region Configure - Configure the HTTP request pipeline
             // Configure the HTTP request pipeline.
