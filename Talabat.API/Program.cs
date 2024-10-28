@@ -6,7 +6,7 @@ namespace Talabat.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +27,35 @@ namespace Talabat.API
 
             var app = builder.Build();
 
+
+            #region Update-Database
+
+            //StoreContext dbContext = new StoreContext();
+            //await dbContext.Database.MigrateAsync();
+
+            using var Scope = app.Services.CreateScope();
+
+            var Services = Scope.ServiceProvider;
+
+            var LoggerFactory = Services.GetRequiredService<ILoggerFactory>();
+
+            try
+            {
+
+                var DbContext = Services.GetRequiredService<StoreContext>();
+
+                await DbContext.Database.MigrateAsync();
+
+                //Scope.Dispose();
+            }
+            catch (Exception ex)
+            {
+                var Logger = LoggerFactory.CreateLogger<Program>();
+                Logger.LogError(ex, "An Error Occured During Applying The Migration");
+            }
+            #endregion
+
+            #region Configure - Configure the HTTP request pipeline
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -41,6 +70,7 @@ namespace Talabat.API
 
             app.MapControllers();
 
+            #endregion
             app.Run();
         }
     }
