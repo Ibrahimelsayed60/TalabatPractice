@@ -1,5 +1,9 @@
 
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Talabat.API.Errors;
+using Talabat.API.Helpers;
+using Talabat.API.Middlewares;
 using Talabat.Core.Entities;
 using Talabat.Core.Repositories;
 using Talabat.Repository;
@@ -30,6 +34,30 @@ namespace Talabat.API
             //builder.Services.AddScoped<IGenericRepository<ProductType>, GenericRepository<ProductType>>();
 
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+            builder.Services.AddAutoMapper(M => M.AddProfile(new MappingProfiles()));
+            builder.Services.AddAutoMapper(typeof(MappingProfiles));
+
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = (actionContext) =>
+                {
+                    // ModelState => Dictionary [KeyValue pair]
+                    // Key => Name of Param
+                    // Value => Error
+
+                    var errors = actionContext.ModelState.Where(P => P.Value.Errors.Count() > 0)
+                                                .SelectMany(P => P.Value.Errors)
+                                                .Select(E => E.ErrorMessage)
+                                                .ToArray();
+
+                    var ValidationErrorResponse = new ApiValidationErrorResponse()
+                    {
+                        Errors = errors
+                    };
+                    return new BadRequestObjectResult(ValidationErrorResponse);
+                };
+            });
 
             #endregion
 
@@ -74,9 +102,14 @@ namespace Talabat.API
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                app.UseMiddleware<ExceptionMiddleWare>();
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseStatusCodePagesWithRedirects("errors/{0}");
+
+            app.UseStaticFiles();
 
             app.UseHttpsRedirection();
 
