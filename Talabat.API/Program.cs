@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Talabat.API.Errors;
+using Talabat.API.Extensions;
 using Talabat.API.Helpers;
 using Talabat.API.Middlewares;
 using Talabat.Core.Entities;
@@ -33,31 +34,7 @@ namespace Talabat.API
             //builder.Services.AddScoped<IGenericRepository<Product>, GenericRepository<Product>>();
             //builder.Services.AddScoped<IGenericRepository<ProductType>, GenericRepository<ProductType>>();
 
-            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
-            builder.Services.AddAutoMapper(M => M.AddProfile(new MappingProfiles()));
-            builder.Services.AddAutoMapper(typeof(MappingProfiles));
-
-            builder.Services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.InvalidModelStateResponseFactory = (actionContext) =>
-                {
-                    // ModelState => Dictionary [KeyValue pair]
-                    // Key => Name of Param
-                    // Value => Error
-
-                    var errors = actionContext.ModelState.Where(P => P.Value.Errors.Count() > 0)
-                                                .SelectMany(P => P.Value.Errors)
-                                                .Select(E => E.ErrorMessage)
-                                                .ToArray();
-
-                    var ValidationErrorResponse = new ApiValidationErrorResponse()
-                    {
-                        Errors = errors
-                    };
-                    return new BadRequestObjectResult(ValidationErrorResponse);
-                };
-            });
+            builder.Services.AddApplicationServices();
 
             #endregion
 
@@ -103,8 +80,7 @@ namespace Talabat.API
             if (app.Environment.IsDevelopment())
             {
                 app.UseMiddleware<ExceptionMiddleWare>();
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerMiddlewares();
             }
 
             app.UseStatusCodePagesWithRedirects("errors/{0}");
