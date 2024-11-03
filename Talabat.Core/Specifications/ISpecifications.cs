@@ -19,7 +19,11 @@ namespace Talabat.Core.Specifications
         // Signature for Property for List of Includes 
         public List<Expression<Func<T,object>>> Includes { get; set; }
 
+        // Signature for Property [OrderBy(P => P.name)]
+        public Expression<Func<T, object>> OrderBy { get; set; }
 
+        //Signature for property [OrderByDesc(P => P.name)]
+        public Expression<Func<T,object>> OrderByDescending { get; set; }
 
     }
 }
