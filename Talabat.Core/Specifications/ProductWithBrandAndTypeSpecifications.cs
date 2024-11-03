@@ -10,15 +10,20 @@ namespace Talabat.Core.Specifications
     public class ProductWithBrandAndTypeSpecifications:BaseSpecifications<Product>
     {
         // Constructor to Get All Products
-        public ProductWithBrandAndTypeSpecifications(string Sort):base()
+        public ProductWithBrandAndTypeSpecifications(ProductSpecParams Params)
+            :base(P => 
+            (!Params.BrandId.HasValue || P.ProductBrandId == Params.BrandId)
+            &&
+            (!Params.TypeId.HasValue || P.ProductTypeId == Params.TypeId)
+            )
         {
             Includes.Add(P => P.ProductType);
 
             Includes.Add(P => P.ProductBrand);
 
-            if(!string.IsNullOrEmpty(Sort))
+            if(!string.IsNullOrEmpty(Params.Sort))
             {
-                switch(Sort)
+                switch(Params.Sort)
                 {
                     case "PriceAsc":
                         AddOrderBy(P => P.Price);
