@@ -37,6 +37,16 @@ namespace Talabat.Core.Specifications
                          
                 }
             }
+
+            // Products = 100
+            // PageSize = 10
+            // PageIndex = 5
+
+            // Skip => 10 * (5-1) = 40
+            // Take => 10
+
+            ApplyPagination(Params.PageSize * (Params.PageIndex - 1), Params.PageSize);
+
         }
 
 

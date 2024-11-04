@@ -14,6 +14,9 @@ namespace Talabat.Core.Specifications
         public List<Expression<Func<T, object>>> Includes { get ; set ; } = new List<Expression<Func<T, object>>> ();
         public Expression<Func<T, object>> OrderBy { get; set; }
         public Expression<Func<T, object>> OrderByDescending { get; set; }
+        public int SKip { get; set; }
+        public int Take { get; set; }
+        public bool IsPaginationEnabled { get; set; }
 
         // Get All
         public BaseSpecifications()
@@ -36,6 +39,13 @@ namespace Talabat.Core.Specifications
         public void AddOrderByDescending(Expression<Func<T, object>> orderByDescExpression)
         {
             OrderByDescending = orderByDescExpression;
+        }
+
+        public void ApplyPagination(int skip, int take)
+        {
+            IsPaginationEnabled = true;
+            SKip = skip;
+            Take = take;
         }
     }
 }

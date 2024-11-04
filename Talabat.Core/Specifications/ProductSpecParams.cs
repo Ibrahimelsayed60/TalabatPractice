@@ -15,5 +15,14 @@ namespace Talabat.Core.Specifications
 
         public int? TypeId { get; set; }
 
+        private int pageSize;
+
+        public int PageSize
+        {
+            get { return pageSize; }
+            set { pageSize = value > 10 ? 10 : value; }
+        }
+
+        public int PageIndex { get; set; }
     }
 }
