@@ -45,8 +45,9 @@ namespace Talabat.API.Controllers
             //    Count = ,
             //    Data = MappedProducts
             //};
-
-            return Ok(new Pagination<ProductToReturnDto>(Params.PageIndex, Params.PageSize, MappedProducts));
+            var CountSpec = new ProductWithFilterationForCountAsync(Params);
+            var Count = await _productRepo.GetCountWithSpecAsync(CountSpec);
+            return Ok(new Pagination<ProductToReturnDto>(Params.PageIndex, Params.PageSize, MappedProducts, Count));
 
         }
 

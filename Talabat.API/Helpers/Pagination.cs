@@ -6,11 +6,12 @@ namespace Talabat.API.Helpers
     {
         
 
-        public Pagination(int pageIndex, int pageSize, IReadOnlyList<T> data)
+        public Pagination(int pageIndex, int pageSize, IReadOnlyList<T> data, int count)
         {
             PageIndex = pageIndex;
             PageSize = pageSize;
             Data = data;
+            Count = count;
         }
 
         public int PageSize { get; set; }
