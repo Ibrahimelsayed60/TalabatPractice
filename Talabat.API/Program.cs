@@ -10,6 +10,7 @@ using Talabat.Core.Entities;
 using Talabat.Core.Repositories;
 using Talabat.Repository;
 using Talabat.Repository.Data;
+using Talabat.Repository.Identity;
 
 namespace Talabat.API
 {
@@ -34,6 +35,11 @@ namespace Talabat.API
 
             //builder.Services.AddScoped<IGenericRepository<Product>, GenericRepository<Product>>();
             //builder.Services.AddScoped<IGenericRepository<ProductType>, GenericRepository<ProductType>>();
+
+            builder.Services.AddDbContext<AppIdentityDbContext>(Options =>
+            {
+                Options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
+            });
 
             builder.Services.AddSingleton<IConnectionMultiplexer>(options =>
             {
@@ -65,6 +71,10 @@ namespace Talabat.API
                 var dbContext = Services.GetRequiredService<StoreContext>();
 
                 await dbContext.Database.MigrateAsync();
+
+                var IdentityDbContext = Services.GetRequiredService<AppIdentityDbContext>();
+
+                await IdentityDbContext.Database.MigrateAsync();
 
                 //Scope.Dispose();
 
