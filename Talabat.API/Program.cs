@@ -1,14 +1,18 @@
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 using Talabat.API.Errors;
 using Talabat.API.Extensions;
 using Talabat.API.Helpers;
 using Talabat.API.Middlewares;
 using Talabat.Core.Entities;
+using Talabat.Core.Entities.Identity;
 using Talabat.Core.Repositories;
 using Talabat.Repository;
 using Talabat.Repository.Data;
+using Talabat.Repository.Identity;
 
 namespace Talabat.API
 {
@@ -34,7 +38,20 @@ namespace Talabat.API
             //builder.Services.AddScoped<IGenericRepository<Product>, GenericRepository<Product>>();
             //builder.Services.AddScoped<IGenericRepository<ProductType>, GenericRepository<ProductType>>();
 
+            builder.Services.AddDbContext<AppIdentityDbContext>(Options =>
+            {
+                Options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection"));
+            });
+
+            builder.Services.AddSingleton<IConnectionMultiplexer>(options =>
+            {
+                var Connection = builder.Configuration.GetConnectionString("RedisConnection");
+                return ConnectionMultiplexer.Connect(Connection);
+            });
+
             builder.Services.AddApplicationServices();
+
+            builder.Services.AddIdentityServices(builder.Configuration);
 
             #endregion
 
@@ -58,6 +75,14 @@ namespace Talabat.API
                 var dbContext = Services.GetRequiredService<StoreContext>();
 
                 await dbContext.Database.MigrateAsync();
+
+                var IdentityDbContext = Services.GetRequiredService<AppIdentityDbContext>();
+
+                await IdentityDbContext.Database.MigrateAsync();
+
+                var UserManager = Services.GetRequiredService<UserManager<AppUser>>();
+
+                await AppIdentityDbContextSeed.SeedUserAsync(UserManager);
 
                 //Scope.Dispose();
 
@@ -83,7 +108,7 @@ namespace Talabat.API
                 app.UseSwaggerMiddlewares();
             }
 
-            app.UseStatusCodePagesWithRedirects("errors/{0}");
+            app.UseStatusCodePagesWithRedirects("/errors/{0}");
 
             app.UseStaticFiles();
 

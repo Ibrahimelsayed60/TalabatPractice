@@ -12,6 +12,8 @@ namespace Talabat.Core.Specifications
         // Constructor to Get All Products
         public ProductWithBrandAndTypeSpecifications(ProductSpecParams Params)
             :base(P => 
+            (string.IsNullOrEmpty(Params.Search) || P.Name.ToLower().Contains(Params.Search))
+            &&
             (!Params.BrandId.HasValue || P.ProductBrandId == Params.BrandId)
             &&
             (!Params.TypeId.HasValue || P.ProductTypeId == Params.TypeId)
