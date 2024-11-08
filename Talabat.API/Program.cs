@@ -51,7 +51,7 @@ namespace Talabat.API
 
             builder.Services.AddApplicationServices();
 
-            builder.Services.AddIdentityServices();
+            builder.Services.AddIdentityServices(builder.Configuration);
 
             #endregion
 
@@ -108,7 +108,7 @@ namespace Talabat.API
                 app.UseSwaggerMiddlewares();
             }
 
-            app.UseStatusCodePagesWithRedirects("errors/{0}");
+            app.UseStatusCodePagesWithRedirects("/errors/{0}");
 
             app.UseStaticFiles();
 
