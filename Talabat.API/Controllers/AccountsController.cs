@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Talabat.API.DTOs;
 using Talabat.API.Errors;
+using Talabat.API.Extensions;
 using Talabat.Core.Entities.Identity;
 using Talabat.Core.Services;
 
@@ -17,14 +19,17 @@ namespace Talabat.API.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly ITokenService _tokenService;
+        private readonly IMapper _mapper;
 
         public AccountsController(UserManager<AppUser> userManager, 
             SignInManager<AppUser> signInManager,
-            ITokenService tokenService)
+            ITokenService tokenService,
+            IMapper mapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenService = tokenService;
+            _mapper = mapper;
         }
 
         // Register
@@ -90,6 +95,23 @@ namespace Talabat.API.Controllers
 
             return Ok(ReturnedObject);
         }
+
+        [Authorize]
+        [HttpGet("Address")]
+        public async Task<ActionResult<AddressDto>> GetCurrentUserAddress()
+        {
+            //var Email = User.FindFirstValue(ClaimTypes.Email);
+            //var user = await _userManager.FindByEmailAsync(Email);
+
+            var user = await _userManager.FindUserWithAddressAsync(User);
+
+            var MappedAddress = _mapper.Map<Address, AddressDto>(user.Address);
+
+            return Ok(MappedAddress);
+
+        }
+
+
 
 
     }
