@@ -9,6 +9,18 @@ namespace Talabat.Core.Entities.OrderAggregate
 {
     public class Order:BaseEntity
     {
+        public Order()
+        {
+            
+        }
+        public Order(string buyerEmail, Address shippingAddress, DeliveryMethod deliveryMethod, ICollection<OrderItem> items, decimal subTotal)
+        {
+            BuyerEmail = buyerEmail;
+            ShippingAddress = shippingAddress;
+            DeliveryMethod = deliveryMethod;
+            Items = items;
+            SubTotal = subTotal;
+        }
 
         public string BuyerEmail { get; set; }
 
