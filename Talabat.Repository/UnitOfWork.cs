@@ -21,7 +21,7 @@ namespace Talabat.Repository
             _repositories = new Hashtable();
             _dbContext = dbContext;
         }
-        public async Task<int> COmpleteAsync()
+        public async Task<int> CompleteAsync()
         {
             return await _dbContext.SaveChangesAsync();
         }
