@@ -3,7 +3,9 @@ using Talabat.API.Errors;
 using Talabat.API.Helpers;
 using Talabat.Core;
 using Talabat.Core.Repositories;
+using Talabat.Core.Services;
 using Talabat.Repository;
+using Talabat.Service;
 
 namespace Talabat.API.Extensions
 {
@@ -17,6 +19,7 @@ namespace Talabat.API.Extensions
 
             Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            Services.AddScoped<IOrderService, OrderService>();    
             //builder.Services.AddAutoMapper(M => M.AddProfile(new MappingProfiles()));
             Services.AddAutoMapper(typeof(MappingProfiles));
 
