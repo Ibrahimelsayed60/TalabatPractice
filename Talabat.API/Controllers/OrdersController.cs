@@ -40,28 +40,32 @@ namespace Talabat.API.Controllers
 
 
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(IReadOnlyList<Order>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IReadOnlyList<OrderToReturnDto>), StatusCodes.Status200OK)]
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<Order>>> GetOrders()
+        public async Task<ActionResult<IReadOnlyList<OrderToReturnDto>>> GetOrders()
         {
             var BuyerEmail = User.FindFirstValue(ClaimTypes.Email);
-            var Order = await _orderService.GetOrdersForSpecificUserAsync(BuyerEmail);
-            if (Order is null) return NotFound(new ApiResponse(404, "There is no Orders for this user"));
-            return Ok(Order);
+            var Orders = await _orderService.GetOrdersForSpecificUserAsync(BuyerEmail);
+            if (Orders is null) return NotFound(new ApiResponse(404, "There is no Orders for this user"));
+
+            var MappedOrders = _mapper.Map<IReadOnlyList<Order>, IReadOnlyList<OrderToReturnDto>>(Orders);
+
+            return Ok(MappedOrders);
         }
 
 
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(Order), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(OrderToReturnDto), StatusCodes.Status200OK)]
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<ActionResult<Order>> GetOrderByIdForUser(int id)
+        public async Task<ActionResult<OrderToReturnDto>> GetOrderByIdForUser(int id)
         {
             var BuyerEmail = User.FindFirstValue(ClaimTypes.Email);
             var order = await _orderService.GetOrderByIdForSpecificUserAsync(BuyerEmail, id);
             if (order is null) return NotFound(new ApiResponse(404, $"There is no order with {id} for this user"));
-            return Ok(order);
+            var MappedOrder = _mapper.Map<Order, OrderToReturnDto>(order);
+            return Ok(MappedOrder);
 
         }
 
