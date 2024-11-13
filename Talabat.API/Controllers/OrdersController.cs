@@ -38,5 +38,18 @@ namespace Talabat.API.Controllers
 
         }
 
+
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(IReadOnlyList<Order>), StatusCodes.Status200OK)]
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult<IReadOnlyList<Order>>> GetOrders()
+        {
+            var BuyerEmail = User.FindFirstValue(ClaimTypes.Email);
+            var Order = await _orderService.GetOrdersForSpecificUserAsync(BuyerEmail);
+            if (Order is null) return NotFound(new ApiResponse(404, "There is no Orders for this user"));
+            return Ok(Order);
+        }
+
     }
 }
