@@ -23,6 +23,8 @@ namespace Talabat.API.Extensions
             //builder.Services.AddAutoMapper(M => M.AddProfile(new MappingProfiles()));
             Services.AddAutoMapper(typeof(MappingProfiles));
 
+            Services.AddScoped<IPaymentService, PaymentService>();
+
             #region Error - Handling
             Services.Configure<ApiBehaviorOptions>(options =>
             {

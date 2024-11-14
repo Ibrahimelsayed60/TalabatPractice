@@ -68,7 +68,7 @@ namespace Talabat.Service
                 {
                     Amount = (long) SubTotal * 100 + (long) ShippingPrice * 100,
                     Currency = "usd",
-                    PaymentMethodTypes = new List<string>() { ""}
+                    PaymentMethodTypes = new List<string>() { "card"}
 
                 };
                 paymentIntent= await Service.CreateAsync(options);
