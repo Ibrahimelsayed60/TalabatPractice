@@ -30,7 +30,7 @@ namespace Talabat.API.Controllers
         }
 
         // Get All Products
-        [Authorize]
+        //[Authorize]
         [HttpGet]
         public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetProducts([FromQuery] ProductSpecParams Params)
         {
